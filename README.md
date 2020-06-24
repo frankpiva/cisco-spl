@@ -1,5 +1,13 @@
 # cisco-spl
 
+## Information
+The following commands provision an ELB in front of an EC2 with a security group allowing traffic on port 80.
+
+This solution relies on the Amazon default VPC existing. If no default VPC exists, you may receive the following error:
+```
+No default VPC for this user (Service: AmazonEC2; Status Code: 400; Error Code: VPCIdNotSpecified; Request ID: 6d0d8b96-31ed-4c1a-a125-fc935da365aa)
+```
+
 ## Deploy
 1. Configure your command line credentials.
 
