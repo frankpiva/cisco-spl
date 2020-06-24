@@ -57,7 +57,7 @@ A live example can be viewed [here](http://cisco-spl-1259915956.us-east-1.elb.am
     **Note**:  It may take a few minutes for the load balancer to rotate the instance into service after passing the health check.
 
     ```
-    aws --region us-east-1 elb describe-load-balancers --load-balancer-names cisco-spl
+    aws elb describe-load-balancers --load-balancer-names cisco-spl --region us-east-1
 
     {
     "LoadBalancerDescriptions": [
