@@ -1,0 +1,62 @@
+{
+    "AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "This template provisions an ELB in front of an EC2.",
+    "Resources": {
+        "SecurityGroup": {
+            "Type": "AWS::EC2::SecurityGroup",
+            "Properties": {
+                "GroupDescription": "cisco-spl",
+                "SecurityGroupIngress": [
+                    {
+                        "CidrIp": "0.0.0.0/0",
+                        "FromPort": "80",
+                        "IpProtocol": "TCP",
+                        "ToPort": "80"
+                    }
+                ]
+            } 
+        },
+        "Instance": {
+            "Type": "AWS::EC2::Instance",
+            "Properties": {
+                "AvailabilityZone": "us-east-1a",
+                "ImageId": "ami-0ac80df6eff0e70b5",
+                "InstanceType": "t2.micro",
+                "SecurityGroups": [
+                    { "Ref" : "SecurityGroup" }
+                ],
+                "UserData" : {
+                    "Fn::Base64" : {
+                        "Fn::Join" : [ "\n", [
+                            "#!/bin/bash",
+                            "sudo apt install nginx -y",
+                            "sudo -- sh -c \"echo '<html><head><title>Cisco SPL</title></head><body><h1><center>Cisco SPL</center></h1></body></html>' > /var/www/html/index.nginx-debian.html\"",
+                            "sudo systemctl restart nginx" ] ]
+                    }
+                }
+            }
+        },
+        "LoadBalancer" : {
+            "Type" : "AWS::ElasticLoadBalancing::LoadBalancer",
+            "Properties" : {
+                "AvailabilityZones" : [ "us-east-1a" ],
+                "Instances" : [
+                    { "Ref" : "Instance" }
+                ],
+                "LoadBalancerName": "cisco-spl",
+                "Listeners" : [ {
+                    "LoadBalancerPort" : "80",
+                    "InstancePort" : "80",
+                    "Protocol" : "HTTP"
+                } ],
+                "HealthCheck" : {
+                    "Target" : "HTTP:80/",
+                    "HealthyThreshold" : "3",
+                    "UnhealthyThreshold" : "5",
+                    "Interval" : "30",
+                    "Timeout" : "5"
+                }
+            }
+        }
+    }
+}
